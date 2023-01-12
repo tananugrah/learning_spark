@@ -325,3 +325,5 @@ updatedDF.printSchema()
 updatedDF.show(truncate=False)
 ```
 Here, it copies “gender“, “salary” and “id” to the new struct “otherInfo” and add’s a new column “Salary_Grade“.
+
+source : https://sparkbyexamples.com/pyspark/pyspark-structtype-and-structfield/
