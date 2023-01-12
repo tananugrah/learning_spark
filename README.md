@@ -363,3 +363,4 @@ dropDisDF = df.dropDuplicates(["department","salary"])
 print("Distinct count of department & salary : "+str(dropDisDF.count()))
 dropDisDF.show(truncate=False)
 ```
+source : https://sparkbyexamples.com/pyspark/pyspark-distinct-to-drop-duplicates/
