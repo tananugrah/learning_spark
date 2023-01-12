@@ -327,3 +327,39 @@ updatedDF.show(truncate=False)
 Here, it copies “gender“, “salary” and “id” to the new struct “otherInfo” and add’s a new column “Salary_Grade“.
 
 source : https://sparkbyexamples.com/pyspark/pyspark-structtype-and-structfield/
+
+# PySpark Distinct to Drop Duplicate Rows
+
+PySpark distinct() function is used to drop/remove the duplicate rows (all columns) from DataFrame and dropDuplicates() is used to drop rows based on selected (one or multiple) columns.
+
+1. create a DataFrame with some duplicate rows and values on a few columns.
+```link
+https://github.com/tananugrah/learning_spark/blob/main/Learning-Spark-Pyspark-distinct-Drop-Duplicate.ipynb
+```
+2. Get Distinct Rows (By Comparing All Columns).
+
+On the above DataFrame, we have a total of 10 rows with 2 rows having all values duplicated, performing distinct on this DataFrame should get us 9 after removing 1 duplicate row.
+
+```python
+#Get Distinct Rows (By Comparing All Columns)
+distinctDF = df.distinct()
+print("Distinct count: "+str(distinctDF.count()))
+distinctDF.show(truncate=False)
+```
+or
+```python
+#Alternatively, you can also run dropDuplicates() function which returns a new DataFrame after removing duplicate rows.
+#this using more resource
+df2 = df.dropDuplicates()
+print("Distinct count: "+str(df2.count()))
+df2.show(truncate=False)
+```
+3. PySpark Distinct of Selected Multiple Columns.
+
+PySpark doesn’t have a distinct method that takes columns that should run distinct on (drop duplicate rows on selected multiple columns) however, it provides another signature of dropDuplicates() function which takes multiple columns to eliminate duplicates.
+```python
+#PySpark Distinct of Selected Multiple Columns
+dropDisDF = df.dropDuplicates(["department","salary"])
+print("Distinct count of department & salary : "+str(dropDisDF.count()))
+dropDisDF.show(truncate=False)
+```
