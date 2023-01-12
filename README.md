@@ -215,3 +215,113 @@ https://phoenixnap.com/kb/spark-create-dataframe.
 https://docs.databricks.com/getting-started/dataframes-python.html.
 https://sparkbyexamples.com/pyspark/pyspark-where-filter/.
 https://sparkbyexamples.com/pyspark/pyspark-aggregate-functions/.
+
+# PySpark StructType & StructField Explained.
+
+code you can see on Learning-Spark-StructType.ipynb.
+
+PySpark StructType & StructField classes are used to programmatically specify the schema to the DataFrame and create complex columns like nested struct, array, and map columns. that defines column name, column data type, boolean to specify if the field can be nullable or not and metadata.
+
+1. StructType – Defines the structure of the Dataframe
+```python
+from pyspark.sql.types import StructType
+```
+StructType is a collection or list of StructField objects.
+
+PySpark printSchema() method on the DataFrame shows StructType columns as struct.
+
+2. StructField – Defines the metadata of the DataFrame column
+```python
+from pyspark.sql.types import StructField
+```
+to define the columns which include column name(String), column type (DataType), nullable column (Boolean) and metadata (MetaData).
+
+3. Using PySpark StructType & StructField with DataFrame.
+
+StructType is a collection of StructField’s which is used to define the column name, data type, and a flag for nullable or not. Using StructField we can also add nested struct schema, ArrayType for arrays, and MapType for key-value pairs which we will discuss in detail in later sections.
+
+```python
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType,StructField, StringType, IntegerType
+
+spark = SparkSession.builder.master("local[1]") \
+                    .appName('SparkStructExample.com') \
+                    .getOrCreate()
+```
+create a StructType & StructField on DataFrame.
+```python
+data = [
+    ("Agus","","Rohmawan","36636","M",3000),
+    ("Dilan","Cepmek","","40288","M",4000),
+    ("Fajar","","Sadboy","42114","M",4000),
+    ("Kekeyi","Doll","Jones","39192","F",4000),
+    ("Jenjen","Maryam","Pink","","F",-1),
+    ("Jeni","Jeno","Jojo","","F",-1),
+    ("Tan","Tin","Tun","42113","M",10000)
+  ]
+
+schema = StructType([ \
+    StructField("firstname",StringType(),True), \
+    StructField("middlename",StringType(),True), \
+    StructField("lastname",StringType(),True), \
+    StructField("id", StringType(), True), \
+    StructField("gender", StringType(), True), \
+    StructField("salary", IntegerType(), True) \
+  ])
+ 
+df = spark.createDataFrame(data=data,schema=schema)
+df.printSchema()
+df.show(truncate=False)
+```
+4. Defining Nested StructType object struct.
+
+While working on DataFrame we often need to work with the nested struct column and this can be defined using StructType.
+```python
+#Defining Nested StructType object struct
+data2 = [
+    (("Agus","","Rohmawan"),"36636","M",7000),
+    (("Dilan","Cepmek",""),"40288","M",8000),
+    (("Fajar","","Sadboy"),"42114","M",7000),
+    (("Kekeyi","Doll","Jones"),"39192","F",7000),
+    (("Jenjen","Maryam","Pink"),"","F",-1),
+    (("Jeni","Jeno","Jojo"),"","F",-1),
+    (("Tan","Tin","Tun"),"42113","M",10000)
+  ]
+structureSchema = StructType([
+        StructField('name', StructType([
+             StructField('firstname', StringType(), True),
+             StructField('middlename', StringType(), True),
+             StructField('lastname', StringType(), True)
+             ])),
+         StructField('id', StringType(), True),
+         StructField('gender', StringType(), True),
+         StructField('salary', IntegerType(), True)
+         ])
+#define data what you use for data=(variable data name)
+df2 = spark.createDataFrame(data=data2,schema=structureSchema)
+df2.printSchema()
+df2.show(truncate=False)
+```
+5. Adding & Changing struct of the DataFrame.
+Using PySpark SQL function struct(), we can change the struct of the existing DataFrame and add a new StructType to it. 
+example how to copy the columns from one structure to another and adding a new column.
+```python
+#Adding & Changing struct of the DataFrame
+from pyspark.sql.functions import col,struct,when
+updatedDF = df2.withColumn("OtherInfo", #add column other info with nasted column id,gender,salary
+    struct(
+        col("id").alias("identifier"),
+        col("gender").alias("gender"),
+        col("salary").alias("salary"),
+    when(
+        col("salary").cast(IntegerType()) < 2000,"Low")
+      .when(
+          col("salary").cast(IntegerType()) < 7000,"Medium")
+      .otherwise("High").alias("Salary_Grade")
+      )).drop("id","gender","salary")
+
+updatedDF.printSchema()
+updatedDF.show(truncate=False)
+```
+Here, it copies “gender“, “salary” and “id” to the new struct “otherInfo” and add’s a new column “Salary_Grade“.
