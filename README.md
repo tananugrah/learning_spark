@@ -403,3 +403,111 @@ properties = {
 df = spark.read.jdbc(url=url, table=table, properties=properties) #read table film
 df2 = spark.read.jdbc(url=url, table=table2, properties=properties) #read table inventory
 ```
+
+# PySpark SQL expr() (Expression ) Function
+
+PySpark expr() is a SQL function to execute SQL-like expressions and to use an existing DataFrame column value as an expression argument to Pyspark built-in functions. 
+
+you can see the code on https://github.com/tananugrah/learning_spark/blob/main/Learning-Spark-SQL-expr.ipynb
+
+case:
+
+1. Connect to PostgresDB and read table into dataframe
+
+![Screen Shot 2023-01-16 at 15 23 47](https://user-images.githubusercontent.com/22236787/212631031-262b4890-98e8-4bf3-a5f5-bd5db5474e0b.png)
+
+
+2. PySpark SQL expr() Function
+```python
+from pyspark.sql.functions import expr
+```
+
+a. Concatenate Columns using || (similar to SQL).
+
+using || to concatenate values from two string columns.
+
+```python
+# Concatenate Columns using || (similar to SQL)
+df.withColumn("Full_Name",expr(" first_name ||' '|| last_name")).show(5)
+```
+![Screen Shot 2023-01-16 at 15 24 41](https://user-images.githubusercontent.com/22236787/212631184-c0b498ab-d686-4f82-bfd3-aa58314bf2de.png)
+
+b. Using SQL CASE WHEN with expr().
+
+used CASE WHEN expression on withColumn() by using expr(), this example create new column actor_type with the derived values, actor_id >= 1 for type_a, actor_id > 5 for type_b, actor_id > 10 for type_c, and unknown for others
+
+```python
+# Using SQL CASE WHEN with expr()
+df3=df.withColumn("actor_type", expr("CASE WHEN actor_id > '15' THEN 'unknown'"+
+                                     "WHEN actor_id > '10' THEN 'Type_C' " +
+                                     "WHEN actor_id > '5' THEN 'Type_B' " +
+                                     "WHEN actor_id >= '1' THEN 'Type_A' ELSE 'unknown' END"))
+df3.show(20)
+```
+![Screen Shot 2023-01-16 at 15 40 37](https://user-images.githubusercontent.com/22236787/212634252-f28712e8-842a-4ae7-8c8f-c47c413f1c6f.png)
+
+c. expr() function to calculate the length of the string and create new column from column first_name
+```python
+# expr function
+df3.select(df.first_name,\
+     expr("len(first_name)")\
+  .alias("lenght_fname")).show(5)
+ ```
+![Screen Shot 2023-01-16 at 15 45 01](https://user-images.githubusercontent.com/22236787/212635067-ddb3a9ce-dcc7-44ff-875b-25bd2430fd61.png)
+
+d. Using an Existing Column Value for Expression.
+
+the example below adds the month number from the actor_id column instead of a Python constant.
+```python
+#Add Month value from another column
+df.select(df.last_update,df.actor_id, \
+     expr("add_months(last_update, actor_id)") \
+  .alias("inc_date")).show(10)
+```
+
+![Screen Shot 2023-01-16 at 15 47 52](https://user-images.githubusercontent.com/22236787/212635760-23e7b79e-568d-4efe-abe8-7ccfc441fdc1.png)
+
+e. Giving Column Alias along with expr().
+
+You can also use SQL like syntax to provide the alias name to the column expression.
+
+```python
+# Providing alias using 'as'
+df.select(df.last_update,df.actor_id, \
+     expr("""add_months(last_update, actor_id) as incl_date""")
+  ).show(5)
+```
+![Screen Shot 2023-01-16 at 15 50 29](https://user-images.githubusercontent.com/22236787/212636273-e293d04d-946f-4d09-aab9-558492326b97.png)
+
+f. Case Function with expr().
+
+Below example converts int data type to String type.
+```python
+# converts int data type to String type.
+df3 = df.select("actor_id",expr("cast(actor_id as string) as str_actor_id"))
+df3.printSchema()
+df3.show(5)
+```
+![Screen Shot 2023-01-16 at 15 52 04](https://user-images.githubusercontent.com/22236787/212636573-bc2fd8f3-6ffa-4fbd-8e0f-c08a03137610.png)
+
+g. Arithmetic operations.
+
+expr() is also used to provide arithmetic operations, below examples add value 10 to actor_id and creates a new column new_actor_id
+
+```python
+# Arithmetic operations
+df4 = df.select(df.actor_id,expr("actor_id + 10 as new_actor_id")
+               ).show(5)
+```
+![Screen Shot 2023-01-16 at 15 54 29](https://user-images.githubusercontent.com/22236787/212637083-3dd10b4e-e605-4bf0-9443-0b07a13f2e9e.png)
+
+h. Using Filter.
+
+Filter the DataFrame rows can done using expr() expression.
+
+```python
+# Using Filter with expr()
+from pyspark.sql.functions import expr
+df5 = df.filter(expr("actor_id > 10")).show(5)
+```
+![Screen Shot 2023-01-16 at 15 55 45](https://user-images.githubusercontent.com/22236787/212637339-4509540e-5bf4-4d57-833b-80904c39159d.png)
