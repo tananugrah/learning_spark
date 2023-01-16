@@ -377,6 +377,8 @@ To connect to a PostgreSQL database on Databricks, you will need to provide the 
 5. Password: the password for the specified username
 6. You can then use the sql.DataFrame.jdbc() method to create a DataFrame from the database, and the spark.read.jdbc() method to read data from the database.
 
+You can see the code on https://github.com/tananugrah/learning_spark/blob/main/Learn-Spark-Read-Postgres.ipynb
+
 ```python 
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
