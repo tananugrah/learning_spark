@@ -511,3 +511,5 @@ from pyspark.sql.functions import expr
 df5 = df.filter(expr("actor_id > 10")).show(5)
 ```
 ![Screen Shot 2023-01-16 at 15 55 45](https://user-images.githubusercontent.com/22236787/212637339-4509540e-5bf4-4d57-833b-80904c39159d.png)
+
+source : https://sparkbyexamples.com/pyspark/pyspark-sql-expr-expression-function/
