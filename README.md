@@ -364,3 +364,40 @@ print("Distinct count of department & salary : "+str(dropDisDF.count()))
 dropDisDF.show(truncate=False)
 ```
 source : https://sparkbyexamples.com/pyspark/pyspark-distinct-to-drop-duplicates/
+
+
+# Read Postgresql 
+
+To connect to a PostgreSQL database on Databricks, you will need to provide the following information:
+
+1. Host: the hostname or IP address of the machine where the database is running
+2. Port: the port number on which the database is listening
+3. Database name: the name of the database you want to connect to
+4. Username: the username you want to use to connect to the database
+5. Password: the password for the specified username
+6. You can then use the sql.DataFrame.jdbc() method to create a DataFrame from the database, and the spark.read.jdbc() method to read data from the database.
+
+```python 
+from pyspark import SparkConf, SparkContext
+from pyspark.sql import SparkSession
+
+# Create SparkSession
+spark = SparkSession.builder \
+    .appName("Postgres connection") \
+    .config("spark.jars", "/usr/local/postgresql-42.2.5.jar") \
+    .getOrCreate()
+
+# Set connection parameters
+url = "jdbc:postgresql://13.213.xx.xx:5432/postgres"
+table = "film"
+table2 = "inventory"
+table3 = "category"
+properties = {
+    "user": "postgres",
+    "password": "xxxxxx",
+    "driver": "org.postgresql.Driver"
+}
+# Read table into DataFrame
+df = spark.read.jdbc(url=url, table=table, properties=properties) #read table film
+df2 = spark.read.jdbc(url=url, table=table2, properties=properties) #read table inventory
+```
