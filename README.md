@@ -40,7 +40,7 @@ df = (spark.read
 )
 ```
 
-PySpark Where Filter Function | Multiple Conditions
+# PySpark Where Filter Function | Multiple Conditions
 
 1. PySpark DataFrame filter() Syntax
 Below is syntax of the filter function. condition would be an expression you wanted to filter
